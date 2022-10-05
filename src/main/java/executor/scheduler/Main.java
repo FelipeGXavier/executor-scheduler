@@ -23,7 +23,7 @@ public class Main {
             }
         }, "5s", false, true);
 
-        scheduler.scheduleTask(task);
+        //scheduler.scheduleTask(task);
         scheduler.scheduleTask(task2);
     }
 }

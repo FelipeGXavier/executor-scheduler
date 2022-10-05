@@ -16,12 +16,10 @@ public class TaskAction implements Serializable {
     private long time;
     private TimeUnit unit;
     private final boolean runOnce;
-
     private final boolean shouldPersist;
+    private final RunnableSerializable runnable;
 
-    private final Runnable runnable;
-
-    protected TaskAction(TaskExecutionType taskType, String executionPath, String executionTime, boolean runOnce, Runnable runnable, boolean shouldPersist) {
+    protected TaskAction(TaskExecutionType taskType, String executionPath, String executionTime, boolean runOnce, RunnableSerializable runnable, boolean shouldPersist) {
         try {
             String path = new File(".").getCanonicalPath();
             this.taskType = taskType;
@@ -35,7 +33,7 @@ public class TaskAction implements Serializable {
         }
     }
 
-    public static TaskAction ofRunnable(Runnable runnable, String executionTime, boolean runOnce, boolean shouldPersist) {
+    public static TaskAction ofRunnable(RunnableSerializable runnable, String executionTime, boolean runOnce, boolean shouldPersist) {
         return new TaskAction(TaskExecutionType.RUNNABLE, null, executionTime, runOnce, runnable, shouldPersist);
     }
 
@@ -95,7 +93,7 @@ public class TaskAction implements Serializable {
         return runOnce;
     }
 
-    public Runnable getRunnable() {
+    public RunnableSerializable getRunnable() {
         return runnable;
     }
 
