@@ -1,9 +1,14 @@
 package executor.scheduler.core;
 
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-public class TaskAction {
+public class TaskAction implements Serializable {
 
     private final String id = UUID.randomUUID().toString();
     private final TaskExecutionType taskType;
@@ -12,14 +17,31 @@ public class TaskAction {
     private TimeUnit unit;
     private final boolean runOnce;
 
+    private final boolean shouldPersist;
 
-    public TaskAction(TaskExecutionType taskType, String executionPath, String executionTime, boolean runOnce) {
-        this.taskType = taskType;
-        this.executionPath = executionPath;
-        this.runOnce = runOnce;
-        this.parseExecutionTime(executionTime);
+    private final Runnable runnable;
+
+    protected TaskAction(TaskExecutionType taskType, String executionPath, String executionTime, boolean runOnce, Runnable runnable, boolean shouldPersist) {
+        try {
+            String path = new File(".").getCanonicalPath();
+            this.taskType = taskType;
+            this.executionPath = path + "/scripts/" + executionPath;
+            this.runOnce = runOnce;
+            this.runnable = runnable;
+            this.shouldPersist = shouldPersist;
+            this.parseExecutionTime(executionTime);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
+    public static TaskAction ofRunnable(Runnable runnable, String executionTime, boolean runOnce, boolean shouldPersist) {
+        return new TaskAction(TaskExecutionType.RUNNABLE, null, executionTime, runOnce, runnable, shouldPersist);
+    }
+
+    public static TaskAction ofScript(String executionPath, String executionTime, boolean runOnce, boolean shouldPersist) {
+        return new TaskAction(TaskExecutionType.SCRIPT, executionPath, executionTime, runOnce, null, shouldPersist);
+    }
     private void parseExecutionTime(String executionTime) {
         if (executionTime == null || executionTime.isEmpty()) {
             throw new RuntimeException("Tempo de agendamento inválido");
@@ -49,7 +71,6 @@ public class TaskAction {
         this.time = time;
         this.unit = unit;
     }
-
     public TaskExecutionType getTaskType() {
         return taskType;
     }
@@ -62,5 +83,35 @@ public class TaskAction {
         return id;
     }
 
+    public long getTime() {
+        return time;
+    }
 
+    public TimeUnit getUnit() {
+        return unit;
+    }
+
+    public boolean isRunOnce() {
+        return runOnce;
+    }
+
+    public Runnable getRunnable() {
+        return runnable;
+    }
+
+    public boolean shouldPersist() {
+        return shouldPersist;
+    }
+
+    @Override
+    public String toString() {
+        return "TaskAction{" +
+                "id='" + id + '\'' +
+                ", taskType=" + taskType +
+                ", executionPath='" + executionPath + '\'' +
+                ", time=" + time +
+                ", unit=" + unit +
+                ", runOnce=" + runOnce +
+                '}';
+    }
 }
