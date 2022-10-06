@@ -7,8 +7,6 @@ import executor.scheduler.core.contracts.TaskScheduler;
 import executor.scheduler.core.contracts.TaskStorage;
 import executor.scheduler.core.storage.DefaultTaskStorage;
 
-import java.io.IOException;
-
 public class Main {
     public static void main(String[] args) {
         TaskStorage taskStorage = new DefaultTaskStorage("ts");
@@ -23,7 +21,9 @@ public class Main {
             }
         }, "5s", false, true);
 
-        //scheduler.scheduleTask(task);
+        scheduler.scheduleTask(task);
         scheduler.scheduleTask(task2);
+
+        scheduler.printStoredSchedules();
     }
 }

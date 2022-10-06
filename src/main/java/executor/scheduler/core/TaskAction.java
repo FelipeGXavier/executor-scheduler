@@ -40,17 +40,25 @@ public class TaskAction implements Serializable {
     public static TaskAction ofScript(String executionPath, String executionTime, boolean runOnce, boolean shouldPersist) {
         return new TaskAction(TaskExecutionType.SCRIPT, executionPath, executionTime, runOnce, null, shouldPersist);
     }
+
     private void parseExecutionTime(String executionTime) {
         if (executionTime == null || executionTime.isEmpty()) {
             throw new RuntimeException("Tempo de agendamento inválido");
         }
         var parts = executionTime.split("");
-        if (parts.length != 2 || parts[0].isEmpty() || parts[1].isEmpty()) {
+        if (parts.length < 2 || parts[0].isEmpty() || parts[1].isEmpty()) {
             throw new RuntimeException("Tempo de agendamento inválido");
         }
-        long time = Long.parseLong(parts[0]);
+        StringBuilder numberPart = new StringBuilder();
+        var currentPart = parts[0];
+        int index = 0;
+        while (isNumeric(currentPart)) {
+            numberPart.append(currentPart);
+            currentPart = parts[++index];
+        }
+        long time = Long.parseLong(numberPart.toString());
         TimeUnit unit;
-        switch (parts[1].toLowerCase().trim()) {
+        switch (parts[index].toLowerCase().trim()) {
             case "mili":
                 unit = TimeUnit.MILLISECONDS;
                 break;
@@ -69,6 +77,11 @@ public class TaskAction implements Serializable {
         this.time = time;
         this.unit = unit;
     }
+
+    private boolean isNumeric(String str) {
+        return str.chars().allMatch(Character::isDigit);
+    }
+
     public TaskExecutionType getTaskType() {
         return taskType;
     }
