@@ -37,7 +37,6 @@ public class DefaultTaskStorage implements TaskStorage {
 
     @Override
     public boolean put(TaskAction task) throws IOException {
-        logger.info("Adicionando tarefa {} ao storage {}", task, this.storagePath);
         String objectSerializationPath = this.storagePath + "/" + task.getId() + ".ser";
         FileOutputStream file = new FileOutputStream(objectSerializationPath);
         ObjectOutputStream out = new ObjectOutputStream(file);

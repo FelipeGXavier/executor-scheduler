@@ -22,7 +22,7 @@ public class BaseRunnable implements Runnable, Serializable {
     }
 
     protected void cleanTask() {
-        if (this.taskAction.isRunOnce()) {
+        if (this.taskAction.isRunOnce() && this.taskAction.shouldPersist()) {
             this.taskStorage.deleteTask(this.taskAction.getId());
         }
     }
